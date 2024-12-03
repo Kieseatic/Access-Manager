@@ -120,30 +120,38 @@ app.post('/login', async (req, res) => {
     }
 
     try {
+        // Check if the email exists in the database
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        
         if (result.rows.length === 0) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
         const user = result.rows[0];
-        const isPasswordValid = await bcrypt.compare(password, user.password);
 
+        // Compare the hashed password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
+        // Generate JWT token
         const token = jwt.sign(
             { id: user.id, role: user.role },
-            process.env.JWT_SECRET || 'your_jwt_secret',
+            process.env.JWT_SECRET || 'your_jwt_secret', // Make sure JWT_SECRET is set in your environment
             { expiresIn: '1h' }
         );
 
+        // Send response with token and role
         res.json({ message: 'Login successful', token, role: user.role });
+
     } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error('Error during login:', err); // Log the actual error
+        res.status(500).json({ message: 'Internal server error', error: err.message });
     }
 });
+
 
 // Restricted endpoint for Admins
 app.get('/admin-only', authenticateToken, authorizeRole('Admin'), (req, res) => {
