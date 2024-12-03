@@ -1,3 +1,4 @@
+const serverless = require('serverless-http');
 const express = require('express');
 const dotenv = require('dotenv');
 const pool = require('./database');
@@ -218,3 +219,4 @@ app.get('/statistics', async (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+module.exports.handler = serverless(app);

@@ -12,8 +12,9 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080'; // Use environment variable
         try {
-            const response = await axios.post('http://localhost:8080/login', formData);
+            const response = await axios.post(`${API_BASE_URL}/login`, formData);
             // Save token and role in localStorage
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('role', response.data.role);
@@ -27,6 +28,7 @@ const Login = () => {
                 navigate('/dashboard'); // Redirect to Dashboard
             }
         } catch (error) {
+            console.error('Login error:', error); // Log error for debugging
             alert('Login failed. Please check your credentials.');
         }
     };

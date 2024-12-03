@@ -23,15 +23,17 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             const token = localStorage.getItem('token');
+            const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080'; // Use environment variable
+            
             try {
-                const userResponse = await axios.get('http://localhost:8080/user-data', {
+                const userResponse = await axios.get(`${API_BASE_URL}/user-data`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUserData(userResponse.data);
 
                 // Fetch statistics only for non-admin users
                 if (userResponse.data.role === 'User') {
-                    const statsResponse = await axios.get('http://localhost:8080/statistics', {
+                    const statsResponse = await axios.get(`${API_BASE_URL}/statistics`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
                     const stats = statsResponse.data.map((stat) => ({
@@ -47,6 +49,7 @@ const Dashboard = () => {
                 setLoading(false);
             }
         };
+
         fetchData();
     }, []);
 

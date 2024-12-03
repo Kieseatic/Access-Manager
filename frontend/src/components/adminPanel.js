@@ -16,7 +16,7 @@ const AdminPanel = () => {
         setLoading(true);
         setError(null); // Reset error state
         try {
-            const response = await axios.get('http://localhost:8080/users', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/users`, {
                 params: {
                     page: currentPage + 1,
                     limit: itemsPerPage,
@@ -44,11 +44,11 @@ const AdminPanel = () => {
     const toggleUserStatus = async (id, currentStatus) => {
         try {
             const newStatus = currentStatus === true || currentStatus === 'active' ? 'inactive' : 'active';
-    
+
             console.log('Updating user status:', { id, currentStatus, newStatus });
-    
+
             const response = await axios.patch(
-                `http://localhost:8080/users/${id}`,
+                `${process.env.REACT_APP_API_URL}/users/${id}`,
                 { status: newStatus },
                 {
                     headers: {
@@ -56,13 +56,13 @@ const AdminPanel = () => {
                     },
                 }
             );
-    
+
             console.log('Response from server:', response.data);
             alert(response.data.message); // Display success message
             fetchUsers(); // Refresh the user list after status update
         } catch (err) {
             console.error('Error updating user status:', err);
-    
+
             if (err.response) {
                 // Log and alert server response errors
                 console.error('Server error response:', err.response.data);
@@ -78,8 +78,6 @@ const AdminPanel = () => {
             }
         }
     };
-    
-    
 
     // Handle filter changes
     const handleFilterChange = (e) => {

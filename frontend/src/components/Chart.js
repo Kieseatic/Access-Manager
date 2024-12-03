@@ -8,25 +8,34 @@ const Chart = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/statistics');
-                setData(response.data.roles);
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/statistics`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token for secured endpoints
+                    },
+                });
+                setData(response.data.map((stat) => ({ role: stat.role, count: parseInt(stat.count, 10) }))); // Normalize data
             } catch (error) {
                 console.error("Error fetching statistics:", error);
+                alert("Failed to fetch chart data. Please try again.");
             }
         };
         fetchData();
     }, []);
 
     return (
-        <div>
+        <div style={{ textAlign: 'center', margin: '20px auto' }}>
             <h2>User Role Statistics</h2>
-            <BarChart width={600} height={300} data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="role" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#8884d8" />
-            </BarChart>
+            {data.length > 0 ? (
+                <BarChart width={600} height={300} data={data} style={{ margin: '0 auto' }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="role" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#8884d8" />
+                </BarChart>
+            ) : (
+                <p>No statistics available to display.</p>
+            )}
         </div>
     );
 };
